@@ -362,7 +362,20 @@
         const objectionResult = document.getElementById('objectionResult');
 
         const callGemini = async (prompt) => {
-            const apiKey = ""; 
+            // --- การตั้งค่าสำคัญสำหรับ API ---
+            // 1. ไปที่ Google AI Studio เพื่อสร้าง API Key ฟรี: https://aistudio.google.com/app/apikey
+            // 2. นำ API Key ที่ได้มาวางแทนที่ "YOUR_API_KEY_HERE"
+            const apiKey = "YOUR_API_KEY_HERE"; 
+
+            if (apiKey === "YOUR_API_KEY_HERE" || !apiKey) {
+                const errorMessage = `
+                    <p class="text-red-600 font-bold">ข้อผิดพลาด: กรุณาใส่ API Key ของคุณก่อน</p>
+                    <p class="mt-2">คุณต้องมี API Key เพื่อใช้งานฟีเจอร์นี้ สามารถสร้างคีย์ได้ฟรีที่ Google AI Studio</p>
+                    <a href="https://aistudio.google.com/app/apikey" target="_blank" class="inline-block mt-2 text-blue-600 hover:underline">ไปที่ Google AI Studio เพื่อสร้างคีย์ →</a>
+                `;
+                return errorMessage;
+            }
+            
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
             
             const payload = {
@@ -386,8 +399,9 @@
                 });
 
                 if (!response.ok) {
-                    const errorBody = await response.text();
-                    throw new Error(`API Error: ${response.status} ${response.statusText} - ${errorBody}`);
+                    const errorBody = await response.json();
+                    console.error("API Error Body:", errorBody);
+                    throw new Error(`API Error: ${response.status} ${response.statusText}`);
                 }
 
                 const result = await response.json();
@@ -399,7 +413,7 @@
                 }
             } catch (error) {
                 console.error("Error calling Gemini API:", error);
-                return "เกิดข้อผิดพลาดในการเชื่อมต่อกับ AI กรุณาลองใหม่อีกครั้ง";
+                return "เกิดข้อผิดพลาดในการเชื่อมต่อกับ AI กรุณาตรวจสอบ API Key และการเชื่อมต่ออินเทอร์เน็ตของคุณ";
             }
         };
 
